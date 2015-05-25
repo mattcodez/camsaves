@@ -1,0 +1,13 @@
+{
+  "name": "camsaves",
+  "version": "0.0.0",
+  "description": "Save images of webcams from static image feeds",
+  "main": "CamDownload.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "dependencies": {
+    "mkdirp": "~0.5.1"
+  }
+}
