@@ -2,6 +2,7 @@ var http    = require('http'),
     fs      = require('fs'),
     fstream = require('fstream'),
     mkdirp  = require('mkdirp'),
+    rimraf  = require('rimraf'),
     tar     = require('tar');
 
 function CamDownload(properties){
@@ -9,14 +10,15 @@ function CamDownload(properties){
   this.source      = properties.source;
   this.destination = properties.destination;
   this.interval    = properties.interval;
-  this.subfolder   = properties.subfolder;
+  this.folderRate  = properties.folderRate;
+  this.subFolder   = null; //TODO
   //Optional config
   this.taring      = properties.taring;
   //Internal
   this.saveCount   = 0;
 
   //Init
-  switch (this.subfolder){
+  switch (this.folderRate){
     case 'daily':
       this.getFolderName = this.getDailyFolderName;
     break;
@@ -26,7 +28,7 @@ function CamDownload(properties){
     break;
 
     default:
-      //No match, so no subfolder
+      //No match, so no folders
       this.currentFolder = this.destination + '/';
   }
 }
@@ -51,6 +53,11 @@ CamDownload.prototype.setCurrentFolder = function(){
 
   var newFolder = this.getFolderName();
   if (newFolder !== this.currentFolder){
+    //if we're switching folder names and this isn't the first of the script
+    if (this.currentFolder){
+      this.tarFolder(this.currentFolder);
+    }
+
     mkdirp.sync(newFolder);
     this.currentFolder = newFolder;
   }
@@ -80,9 +87,33 @@ CamDownload.prototype.download = function(){
     response.pipe(file);
     this.saveCount++;
     console.log(filepath);
+  }.bind(this))
+  .on('error', function(err){
+    console.log('HTTP error: ' + err.message);
+    this.stopDownload();
+    process.exit();
   }.bind(this));
 };
 
 CamDownload.prototype.tarFolder = function(folder){
+  var onError = console.log.bind(console, 'Error writing tar file');
+  var onEnd = rimraf.bind(rimraf, folder, function(err){
+    if (err){
+      console.log('Error deleting: ' + folder);
+      console.dir(err);
+    }
+    else {
+      console.log('Deleted: ' + folder);
+    }
+  });
 
+  var dirDest = fs.createWriteStream(folder + '.tar');
+  tar.Pack({ noProprietary: true })
+    .on('error', onError)
+    .on('end', onEnd);
+
+  fstream.Reader({ path: folder, type: 'Directory' })
+    .on('error', onError)
+    .pipe(packer)
+    .pipe(dirDest);
 };
