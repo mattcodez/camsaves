@@ -1,14 +1,33 @@
-var http = require('http'),
-    fs = require('fs'),
-    mkdirp = require('mkdirp');
+var http   = require('http'),
+    fs     = require('fs'),
+    mkdirp = require('mkdirp'),
+    tar    = require('tar');
 
 function CamDownload(properties){
-  this.source = properties.source;
+  //Required config
+  this.source      = properties.source;
   this.destination = properties.destination;
-  this.interval = properties.interval;
-  this.subfolder = properties.subfolder;
+  this.interval    = properties.interval;
+  this.subfolder   = properties.subfolder;
+  //Optional config
+  this.taring      = properties.taring;
+  //Internal
+  this.saveCount   = 0;
 
-  this.saveCount = 0;
+  //Init
+  switch (this.subfolder){
+    case 'daily':
+      this.getFolderName = this.getDailyFolderName;
+    break;
+
+    case 'hourly':
+      this.getFolderName = this.getHourlyFolderName;
+    break;
+
+    default:
+      //No match, so no subfolder
+      this.currentFolder = this.destination + '/';
+  }
 }
 
 module.exports = CamDownload;
@@ -20,37 +39,34 @@ CamDownload.prototype.startDownload = function(){
   this.intervalID = setInterval(
     this.download.bind(this), this.interval * 1000
   );
-}
+};
 
 CamDownload.prototype.stopDownload = function(){
   clearInterval(this.intervalID);
-}
+};
 
 CamDownload.prototype.setCurrentFolder = function(){
-  switch (this.subfolder){
-    case 'daily':
-      //Format "Mon May 25 2015"
-      var date = (new Date()).toDateString();
-      var newFolder = this.destination + '/' + date;
-    break;
+  if (!this.getFolderName) return;
 
-    case 'hourly':
-      var dateHour = (new Date()).toISOString();
-      //gives format of "YYYY-MM-DDThh"
-      dateHour = dateHour.substr(0, dateHour.indexOf(':'));
-      var newFolder = this.destination + '/' + dateHour;
-    break;
-
-    default:
-      //No match, so no subfolder
-      newFolder = this.destination + '/';
-  }
-
+  var newFolder = this.getFolderName();
   if (newFolder !== this.currentFolder){
     mkdirp.sync(newFolder);
     this.currentFolder = newFolder;
   }
-}
+};
+
+CamDownload.prototype.getDailyFolderName = function(){
+  //Format "Mon May 25 2015"
+  var date = (new Date()).toDateString();
+  return this.destination + '/' + date;
+};
+
+CamDownload.prototype.getHourlyFolderName = function(){
+  //Format "YYYY-MM-DDThh"
+  var dateHour = (new Date()).toISOString();
+  dateHour = dateHour.substr(0, dateHour.indexOf(':'));
+  return this.destination + '/' + dateHour;
+};
 
 CamDownload.prototype.download = function(){
   this.setCurrentFolder();
@@ -64,4 +80,8 @@ CamDownload.prototype.download = function(){
     this.saveCount++;
     console.log(filepath);
   }.bind(this));
-}
+};
+
+CamDownload.prototype.tarFolder = function(folder){
+
+};

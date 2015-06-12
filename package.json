@@ -8,6 +8,7 @@
   },
   "author": "",
   "dependencies": {
-    "mkdirp": "~0.5.1"
+    "mkdirp": "~0.5.1",
+    "tar": "^2.1.1"
   }
 }
