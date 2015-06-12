@@ -1,7 +1,8 @@
-var http   = require('http'),
-    fs     = require('fs'),
-    mkdirp = require('mkdirp'),
-    tar    = require('tar');
+var http    = require('http'),
+    fs      = require('fs'),
+    fstream = require('fstream'),
+    mkdirp  = require('mkdirp'),
+    tar     = require('tar');
 
 function CamDownload(properties){
   //Required config
