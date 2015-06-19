@@ -91,7 +91,7 @@ CamDownload.prototype.download = function(){
   .on('error', function(err){
     console.log('HTTP error: ' + err.message);
     this.stopDownload();
-    process.exit();
+    //TODO: Trigger an error event
   }.bind(this));
 };
 
