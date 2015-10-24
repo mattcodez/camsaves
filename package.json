@@ -8,6 +8,7 @@
   },
   "author": "",
   "dependencies": {
+    "babel": "^5.8.23",
     "fstream": "^1.0.6",
     "mkdirp": "~0.5.1",
     "rimraf": "^2.4.0",

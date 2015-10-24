@@ -7,10 +7,10 @@ var http    = require('http'),
 
 function CamDownload(properties){
   //Required config
-  this.source      = properties.source;
-  this.destination = properties.destination;
-  this.interval    = properties.interval;
-  this.folderRate  = properties.folderRate;
+  this.source      = properties.source;     //URL to download from
+  this.destination = properties.destination;//where to save on local disk
+  this.interval    = properties.interval;   //how often to save a new file from source
+  this.folderRate  = properties.folderRate; //how often to create a new container folder
   this.subFolder   = null; //TODO
   //Optional config
   this.taring      = properties.taring;

@@ -1,3 +1,5 @@
+require('babel/register')({stage:0});
+
 var CamDownload = require('./CamDownload'),
     config = require('./config.json');
 
