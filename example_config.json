@@ -1,0 +1,11 @@
+{
+  "cams": [
+    {
+      "source": 
+        "http://cmhimg01.dot.state.oh.us/images/US20-Reynolds-South-Large.jpg",
+      "destination": "../pics",
+      "interval": 5, 
+      "folderRate": "hourly"
+    }
+  ]
+}

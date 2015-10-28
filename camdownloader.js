@@ -1,7 +1,5 @@
-require('babel/register')({stage:0});
-
-var CamDownload = require('./CamDownload'),
-    config = require('./config.json');
+import CamDownload from './CamDownload';
+import config from './config.json';
 
 var cams = [];
 for (var i = 0; i < config.cams.length; i++){
